@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('payer_name');
+            $table->string('payer_name');   
             $table->decimal('amount', 15, 2);
             $table->enum('payment_method', ['QRIS', 'DANA']);
             $table->foreignId('category_id')->nullable();
