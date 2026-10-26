@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "outputDirectory": "public",
+  "framework": null,
   "functions": {
     "api/index.php": {
-      "runtime": "vercel-php@0.6.0"
+      "runtime": "vercel-php@0.7.2",
+      "config": {
+        "ext": ["pdo_pgsql", "pgsql"]
+      }
     }
   },
   "routes": [
