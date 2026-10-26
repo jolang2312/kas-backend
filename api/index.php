@@ -1,8 +1,10 @@
 <?php
+
+use Illuminate\Http\Request;
+
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 ini_set('log_errors', '1');
-use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
@@ -23,13 +25,17 @@ if (in_array($origin, $allowedOrigins, true)) {
 }
 
 header('Vary: Origin');
-header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept, Origin, X-CSRF-TOKEN');
+header(
+    'Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS'
+);
+header(
+    'Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept, Origin, X-CSRF-TOKEN'
+);
 header('Access-Control-Max-Age: 86400');
 
 
 // ========================================
-// PREFLIGHT
+// PREFLIGHT CORS
 // ========================================
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
@@ -39,7 +45,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
 
 
 // ========================================
-// STORAGE UNTUK VERCEL
+// STORAGE VERCEL
 // ========================================
 
 $storagePath = '/tmp/storage';
@@ -64,26 +70,15 @@ foreach ($directories as $directory) {
 }
 
 
-// ========================================
-// COMPOSER
-// ========================================
+// Beri tahu Laravel untuk menggunakan /tmp/storage
+putenv('LARAVEL_STORAGE_PATH=' . $storagePath);
 
-require __DIR__ . '/../vendor/autoload.php';
-
-
-// ========================================
-// LARAVEL 12
-// ========================================
-
-$app = require_once __DIR__ . '/../bootstrap/app.php';
-
-
-// Gunakan storage writable milik Vercel
-$app->useStoragePath($storagePath);
+$_ENV['LARAVEL_STORAGE_PATH'] = $storagePath;
+$_SERVER['LARAVEL_STORAGE_PATH'] = $storagePath;
 
 
 // ========================================
-// HANDLE REQUEST
+// BOOT LARAVEL
 // ========================================
 
 try {
@@ -92,18 +87,26 @@ try {
 
     $app = require __DIR__ . '/../bootstrap/app.php';
 
-    $app->useStoragePath($storagePath);
+    if (!is_object($app)) {
+        throw new RuntimeException(
+            'bootstrap/app.php tidak menghasilkan Application. Type: '
+            . gettype($app)
+        );
+    }
 
     $app->handleRequest(
-        Illuminate\Http\Request::capture()
+        Request::capture()
     );
 
-} catch (\Throwable $e) {
+} catch (Throwable $e) {
 
     http_response_code(500);
-    header('Content-Type: text/plain; charset=UTF-8');
 
-    echo "ERROR: " . $e->getMessage() . PHP_EOL;
-    echo "FILE: " . $e->getFile() . PHP_EOL;
-    echo "LINE: " . $e->getLine() . PHP_EOL;
+    header(
+        'Content-Type: text/plain; charset=UTF-8'
+    );
+
+    echo 'ERROR: ' . $e->getMessage() . PHP_EOL;
+    echo 'FILE: ' . $e->getFile() . PHP_EOL;
+    echo 'LINE: ' . $e->getLine() . PHP_EOL;
 }
