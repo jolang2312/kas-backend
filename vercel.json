@@ -3,7 +3,7 @@
     "framework": null,
     "functions": {
         "api/index.php": {
-            "runtime": "vercel-php@0.7.0"
+            "runtime": "vercel-php@0.6.1"
         }
     },
     "routes": [
@@ -11,5 +11,8 @@
             "src": "/(.*)",
             "dest": "/api/index.php"
         }
-    ]
+    ],
+    "env": {
+        "NODE_VERSION": "20.x"
+    }
 }
