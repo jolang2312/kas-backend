@@ -38,7 +38,7 @@ return [
     */
 
     'providers' => ServiceProvider::defaultProviders()->merge([
-        // Provider tambahan jika nanti diperlukan
+        App\Providers\AppServiceProvider::class,
     ])->toArray(),
 
     /*
