@@ -10,22 +10,22 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // User Admin
+        // Akun Admin
         User::updateOrCreate(
             ['email' => 'admin@kas.com'],
             [
                 'name' => 'Administrator Kas',
-                'password' => Hash::make('admin123'),
+                'password' => Hash::make('password123'),
                 'role' => 'admin',
             ]
         );
 
-        // User Anggota Default
+        // Akun Anggota
         User::updateOrCreate(
             ['email' => 'anggota@kas.com'],
             [
                 'name' => 'Anggota Kas',
-                'password' => Hash::make('user123'),
+                'password' => Hash::make('password123'),
                 'role' => 'anggota',
             ]
         );

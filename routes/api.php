@@ -5,6 +5,13 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\TransactionController;
 
+use App\Http\Controllers\PemasukanController;
+
+Route::get('/pemasukan', [PemasukanController::class, 'index']);
+Route::get('/anggota', [AuthController::class, 'getAnggota']);
+Route::post('/anggota', [AuthController::class, 'addAnggota']);
+Route::delete('/anggota/{id}', [AuthController::class, 'deleteAnggota']);
+
 // Auth Route
 Route::post('/login', [AuthController::class, 'login']);
 
