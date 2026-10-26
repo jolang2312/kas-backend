@@ -1,10 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
-define('LARAVEL_START', microtime(true));
-
-
 // ========================================
 // CORS
 // ========================================
@@ -40,39 +35,4 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
 // LARAVEL
 // ========================================
 
-try {
-
-    require __DIR__ . '/../vendor/autoload.php';
-
-    $app = require __DIR__ . '/../bootstrap/app.php';
-
-    $app->handleRequest(
-        Request::capture()
-    );
-
-} } catch (Throwable $e) {
-
-    http_response_code(500);
-    header('Content-Type: text/plain; charset=UTF-8');
-
-    echo "=== ERROR ===" . PHP_EOL;
-    echo $e->getMessage() . PHP_EOL;
-
-    echo PHP_EOL . "=== FILE ===" . PHP_EOL;
-    echo $e->getFile() . ':' . $e->getLine() . PHP_EOL;
-
-    echo PHP_EOL . "=== PREVIOUS ERROR ===" . PHP_EOL;
-
-    $previous = $e->getPrevious();
-
-    if ($previous) {
-        echo $previous->getMessage() . PHP_EOL;
-        echo $previous->getFile() . ':' . $previous->getLine() . PHP_EOL;
-    } else {
-        echo "Tidak ada previous exception." . PHP_EOL;
-    }
-
-    echo PHP_EOL . "=== TRACE ===" . PHP_EOL;
-    echo $e->getTraceAsString();
-
-}
+require __DIR__ . '/../public/index.php';
