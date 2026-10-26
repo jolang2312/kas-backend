@@ -1,9 +1,5 @@
 <?php
 
-// ========================================
-// CORS
-// ========================================
-
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
 $allowedOrigins = [
@@ -20,19 +16,32 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept, Origin, X-CSRF-TOKEN');
 header('Access-Control-Max-Age: 86400');
 
-
-// ========================================
-// PREFLIGHT
-// ========================================
-
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
     http_response_code(204);
     exit;
 }
 
 
-// ========================================
-// LARAVEL
-// ========================================
+// Vercel hanya mengizinkan penulisan sementara di /tmp
+if (!is_dir('/tmp/views')) {
+    mkdir('/tmp/views', 0755, true);
+}
 
-require __DIR__ . '/../public/index.php';
+
+try {
+
+    require __DIR__ . '/../public/index.php';
+
+} catch (Throwable $e) {
+
+    http_response_code(500);
+    header('Content-Type: text/plain; charset=UTF-8');
+
+    echo 'ERROR: ' . $e->getMessage() . PHP_EOL;
+    echo 'FILE: ' . $e->getFile() . PHP_EOL;
+    echo 'LINE: ' . $e->getLine() . PHP_EOL;
+
+    if ($e->getPrevious()) {
+        echo 'PREVIOUS: ' . $e->getPrevious()->getMessage() . PHP_EOL;
+    }
+}
