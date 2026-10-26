@@ -6,6 +6,8 @@ use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\TransactionController;
 
 
+
+
 // LOGIN
 Route::post('/login', [
     AuthController::class,
@@ -51,4 +53,9 @@ Route::post('/anggota', [
 Route::delete('/anggota/{id}', [
     AnggotaController::class,
     'destroy'
-]);
+]);Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'message' => 'Laravel backend berjalan'
+    ]);
+});
