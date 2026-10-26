@@ -1,6 +1,6 @@
 <?php
 
-// 1. Tangani CORS secara penuh di tingkat serverless
+// 1. Tangani CORS Preflight secara langsung
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept, Origin, X-CSRF-TOKEN');
@@ -10,12 +10,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-// 2. Siapkan direktori temporary yang wajib ada untuk Laravel di Vercel
+// 2. Siapkan folder temporary storage Vercel
 $storagePaths = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/sessions',
     '/tmp/storage/framework/cache',
-    '/tmp/storage/bootstrap/cache',
     '/tmp/storage/logs',
 ];
 
@@ -25,17 +24,15 @@ foreach ($storagePaths as $path) {
     }
 }
 
-// 3. Muat Autoload Composer
+// 3. Autoload & Bootstrap Laravel Standard
 require __DIR__ . '/../vendor/autoload.php';
 
-// 4. Inisialisasi Aplikasi Laravel
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-// 5. Atur path storage & bootstrap cache ke /tmp agar tidak read-only error
+// 4. Set storage path ke /tmp
 $app->useStoragePath('/tmp/storage');
-$app->useBootstrapPath('/tmp/storage/bootstrap');
 
-// 6. Jalankan HTTP Kernel Laravel
+// 5. Jalankan Request
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
 $response = $kernel->handle(
