@@ -50,12 +50,29 @@ try {
         Request::capture()
     );
 
-} catch (Throwable $e) {
+} } catch (Throwable $e) {
 
     http_response_code(500);
     header('Content-Type: text/plain; charset=UTF-8');
 
-    echo 'ERROR: ' . $e->getMessage() . PHP_EOL;
-    echo 'FILE: ' . $e->getFile() . PHP_EOL;
-    echo 'LINE: ' . $e->getLine() . PHP_EOL;
+    echo "=== ERROR ===" . PHP_EOL;
+    echo $e->getMessage() . PHP_EOL;
+
+    echo PHP_EOL . "=== FILE ===" . PHP_EOL;
+    echo $e->getFile() . ':' . $e->getLine() . PHP_EOL;
+
+    echo PHP_EOL . "=== PREVIOUS ERROR ===" . PHP_EOL;
+
+    $previous = $e->getPrevious();
+
+    if ($previous) {
+        echo $previous->getMessage() . PHP_EOL;
+        echo $previous->getFile() . ':' . $previous->getLine() . PHP_EOL;
+    } else {
+        echo "Tidak ada previous exception." . PHP_EOL;
+    }
+
+    echo PHP_EOL . "=== TRACE ===" . PHP_EOL;
+    echo $e->getTraceAsString();
+
 }
