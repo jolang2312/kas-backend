@@ -10,35 +10,54 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where(
+            'email',
+            $credentials['email']
+        )->first();
 
-        if (!$user) {
+        if (
+            !$user ||
+            !Hash::check(
+                $credentials['password'],
+                $user->password
+            )
+        ) {
             return response()->json([
-                'message' => 'Email tidak ditemukan di database!'
+                'message' => 'Email atau password salah.'
             ], 401);
         }
 
-        // Paksa update password ke hash yang benar secara otomatis saat tombol diklik
-        $user->password = Hash::make($request->password);
-        $user->save();
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // Hapus token lama
+        $user->tokens()->delete();
+
+
+        // Buat token baru
+        $token = $user
+            ->createToken('auth_token')
+            ->plainTextToken;
+
 
         return response()->json([
+
             'message' => 'Login berhasil',
+
             'access_token' => $token,
+
             'token_type' => 'Bearer',
+
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'role' => $user->role ?? 'admin',
-            ]
-        ], 200);
+                'role' => $user->role ?? 'anggota',
+            ],
+
+        ]);
     }
 }
